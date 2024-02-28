@@ -5,7 +5,7 @@ import jwt
 from flask import Blueprint, jsonify, request
 
 from database import add_user, auth_user, remove_user, users
-from utils import jwt_token, Error4XX
+from utils import jwt_middleware, Error4XX
 
 app = Blueprint('auth', __name__, url_prefix='/api/auth/')
 
@@ -43,7 +43,7 @@ def login():
 
 
 @app.route('/delete', methods=['DELETE'])
-@jwt_token(users)
+@jwt_middleware(users)
 def delete(user):
     try:
         remove_user(user['username'])

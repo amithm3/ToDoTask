@@ -7,7 +7,7 @@ from bson import ObjectId
 from flask import request, jsonify
 
 
-def jwt_token(users):
+def jwt_middleware(users):
     def decorator(foo):
         @wraps(foo)
         def wrapper(*args, **kwargs):

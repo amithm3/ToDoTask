@@ -27,7 +27,20 @@ def jwt_middleware(users):
     return decorator
 
 
+def random_string(length: int):
+    import random
+    import string
+    return ''.join(random.choice(string.ascii_letters) for _ in range(length))
+
+
 class Error4XX(Exception):
     def __init__(self, message="", xx=400):
         super().__init__(message)
         self.xx = xx
+
+
+__all__ = [
+    'jwt_middleware',
+    'random_string',
+    'Error4XX',
+]

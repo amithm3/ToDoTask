@@ -13,6 +13,7 @@ if __name__ == '__main__':
 # @app.route('/template')
 # def template():
 #     data = request.get_json()
+#     args = request.args
 #     try:
 #         pass
 #     except Error4XX as e:

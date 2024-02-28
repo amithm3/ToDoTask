@@ -7,18 +7,24 @@ from app import app
 from test_app_auth import TestAppAuth
 
 from database import add_user, remove_user, remove_todo
+from utils import random_string
 
 
 class TestAppV1(unittest.TestCase):
+    @classmethod
+    def add_todo(cls, token, client):
+        response = client.post(
+            '/api/v1/add',
+            headers={'x-access-token': token},
+            json={'title': random_string(16), 'description': random_string(64)}
+        )
+        return response
+
     def test_add_todo(self):
         with app.test_client() as client:
             add_user(TestAppAuth.USERNAME, TestAppAuth.PASSWORD)
             token = TestAppAuth.login(client).json['token']
-            response = client.post(
-                '/api/v1/add',
-                headers={'x-access-token': token},
-                json={'title': 'title', 'description': 'description'}
-            )
+            response = self.add_todo(token, client)
             remove_user(TestAppAuth.USERNAME)
             pprint(response.json)
             self.assertEqual(response.status_code, 200)
@@ -28,11 +34,7 @@ class TestAppV1(unittest.TestCase):
         with app.test_client() as client:
             add_user(TestAppAuth.USERNAME, TestAppAuth.PASSWORD)
             token = TestAppAuth.login(client).json['token']
-            response = client.post(
-                '/api/v1/add',
-                headers={'x-access-token': token},
-                json={'title': 'title', 'description': 'description'}
-            )
+            response = self.add_todo(token, client)
             response = client.delete(
                 f'/api/v1/delete/{response.json["_id"]}',
                 headers={'x-access-token': token}
@@ -57,11 +59,13 @@ class TestAppV1(unittest.TestCase):
         with app.test_client() as client:
             add_user(TestAppAuth.USERNAME, TestAppAuth.PASSWORD)
             token = TestAppAuth.login(client).json['token']
+            todos = [self.add_todo(token, client) for _ in range(20)]
             response = client.get(
-                '/api/v1/get?offset=0&limit=10',
+                '/api/v1/get?offset=5&limit=10',
                 headers={'x-access-token': token}
             )
             remove_user(TestAppAuth.USERNAME)
+            [remove_todo(todo.json['_id']) for todo in todos]
             pprint(response.json)
             self.assertEqual(response.status_code, 200)
 

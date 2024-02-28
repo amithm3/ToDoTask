@@ -47,6 +47,7 @@ def get(user):
     args = request.args
     try:
         todos = get_todos(str(user['_id']), int(args.get('offset', 0)), int(args.get('limit', 10)))
+        for todo in todos: todo['_id'] = str(todo['_id'])
         return jsonify(todos), 200
     except Error4XX as e:
         return jsonify({'error': str(e)}), e.xx

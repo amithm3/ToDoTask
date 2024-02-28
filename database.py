@@ -15,27 +15,27 @@ users = db['users']
 todos = db['todos']
 
 
-def add_user(username, password):
+def add_user(username: str, password: str):
     if users.find_one({'username': username}): raise Error4XX('User already exists', 400)
     pass_hash = base64.b64encode(password.encode()).decode()
     user_id = users.insert_one({'username': username, 'password': pass_hash}).inserted_id
     return user_id
 
 
-def auth_user(username, password):
+def auth_user(username: str, password: str):
     pass_hash = base64.b64encode(password.encode()).decode()
     user = users.find_one({'username': username, 'password': pass_hash})
     if not user: raise Error4XX('Invalid username or password', 401)
     return user
 
 
-def remove_user(username):
+def remove_user(username: str):
     if not users.find_one({'username': username}): raise Error4XX('User does not exist', 404)
     users.delete_one({'username': username})
     return True
 
 
-def add_todo(user_id, title, description, done=False):
+def add_todo(user_id: str, title: str, description: str, done: bool = False):
     user = get_user_by_id(user_id)
     if not user: raise Error4XX('User does not exist', 404)
     todo_id = todos.insert_one({
@@ -48,13 +48,13 @@ def add_todo(user_id, title, description, done=False):
     return todo_id
 
 
-def get_todos(user_id, offset=0, limit=10):
+def get_todos(user_id: str, offset: int = 0, limit: int = 10):
     user = get_user_by_id(user_id)
     if not user: raise Error4XX('User does not exist', 404)
     return list(todos.find({'user_id': user_id}).sort('timestamp', -1).skip(offset).limit(limit))
 
 
-def remove_todo(todo_id, user_id=None):
+def remove_todo(todo_id: str, user_id: str = None):
     todo = todos.find_one({'_id': ObjectId(todo_id)})
     if not todo: raise Error4XX('Todo does not exist', 404)
     if user_id:
@@ -65,7 +65,7 @@ def remove_todo(todo_id, user_id=None):
     return True
 
 
-def update_todo(user_id, todo_id, **kwargs):
+def update_todo(user_id: str, todo_id: str, **kwargs):
     user = get_user_by_id(user_id)
     todo = get_todo_by_id(todo_id)
     if not user: raise Error4XX('User does not exist', 404)
@@ -75,7 +75,7 @@ def update_todo(user_id, todo_id, **kwargs):
     return True
 
 
-def get_user(username):
+def get_user_by_username(username):
     return users.find_one({'username': username})
 
 

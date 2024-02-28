@@ -18,24 +18,25 @@ To set up the ToDoTask application locally, follow these steps:
     ```bash
     pip install -r requirements.txt
     ```
-3. Run the application:
+3. Copy the given `.env` file to the root directory of the application:
+4. Run the application:
     ```bash
     python app.py
     ```
-4. Use the following API Endpoints to interact with the application:
+5. Use the following API Endpoints to interact with the application:
     ```
     http://localhost:9999/api/auth/
     http://localhost:9999/api/v1/
     ```
-5. Run the unit tests for authentication:
+6. Run the unit tests for authentication:
     ```bash
     python -m unittest test_app_auth.py
     ```
-6. Run the unit tests for the service:
+7. Run the unit tests for the service:
     ```bash
     python -m unittest test_app_v1.py
     ```
-7. See the [Auth_API Endpoints](app_auth.py) and [Service_API Endpoints](app_v1.py) for more details.
+8. See the [Auth_API Endpoints](app_auth.py) and [Service_API Endpoints](app_v1.py) for more details.
 
 # API Endpoints
 

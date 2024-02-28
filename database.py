@@ -4,8 +4,11 @@ from os import environ
 
 from bson import ObjectId
 from pymongo import MongoClient
+from dotenv import load_dotenv
 
 from utils import Error4XX
+
+load_dotenv()
 
 client = MongoClient(
     f"mongodb+srv://{environ['MONGO_USERNAME']}:{environ['MONGO_PASSWORD']}@{environ['MONGO_HOST']}/"

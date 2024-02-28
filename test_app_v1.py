@@ -101,6 +101,18 @@ class TestAppV1(unittest.TestCase):
             pprint(response.json)
             self.assertEqual(response.status_code, 200)
 
+    def test_get_by_id(self):
+        with app.test_client() as client, self.Register(random_string(16), random_string(16), client) as response:
+            pprint(response.json)
+            token = response.json['token']
+            todo = self.add(token, client).json
+            response = client.get(
+                f'/api/v1/get/{todo["_id"]}',
+                headers={'x-access-token': token}
+            )
+            pprint(response.json)
+            self.assertEqual(response.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()

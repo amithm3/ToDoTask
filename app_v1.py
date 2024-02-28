@@ -55,6 +55,21 @@ def get(user):
         return jsonify({'error': "Something went wrong"}), 500
 
 
+@app.route('/get/<string:todo_id>', methods=['GET'])
+@jwt_middleware(user_col)
+def get_by_id(user, todo_id):
+    try:
+        todos = get_todos(str(user['_id']), 0, 1)
+        todo = next(filter(lambda t: t['_id'] == todo_id, todos), None)
+        if not todo: raise Error4XX('Todo does not exist', 404)
+        return jsonify(todo), 200
+    except Error4XX as e:
+        return jsonify({'error': str(e)}), e.xx
+    except Exception as e:
+        logging.error(e)
+        return jsonify({'error': "Something went wrong"}), 500
+
+
 @app.route('/delete/<string:todo_id>', methods=['DELETE'])
 @jwt_middleware(user_col)
 def delete(user, todo_id):

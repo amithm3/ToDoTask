@@ -4,7 +4,7 @@ from os import environ
 import jwt
 from flask import Blueprint, jsonify, request
 
-from database import add_user, auth_user, remove_user, users
+from database import add_user, auth_user, remove_user, user_col
 from utils import jwt_middleware, Error4XX
 
 app = Blueprint('auth', __name__, url_prefix='/api/auth/')
@@ -32,8 +32,8 @@ def register():
 def login():
     data = request.get_json()
     try:
-        user = auth_user(data['username'], data['password'])
-        token = jwt.encode({'_id': str(user["_id"])}, environ["JWT_SECRET"], algorithm="HS256")
+        user_id = auth_user(data['username'], data['password'])
+        token = jwt.encode({'_id': user_id}, environ["JWT_SECRET"], algorithm="HS256")
         return jsonify({'token': token}), 200
     except Error4XX as e:
         return jsonify({'error': str(e)}), e.xx
@@ -43,10 +43,10 @@ def login():
 
 
 @app.route('/delete', methods=['DELETE'])
-@jwt_middleware(users)
+@jwt_middleware(user_col)
 def delete(user):
     try:
-        remove_user(user['username'])
+        remove_user(str(user['_id']))
         return jsonify({'status': 'ok'}), 200
     except Error4XX as e:
         return jsonify({'error': str(e)}), e.xx

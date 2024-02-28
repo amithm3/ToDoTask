@@ -2,7 +2,7 @@ import logging
 
 from flask import Blueprint, jsonify, request
 
-from database import users, add_todo, update_todo, get_todos, remove_todo
+from database import user_col, add_todo, update_todo, get_todos, remove_todo
 from utils import Error4XX, jwt_middleware
 
 app = Blueprint('v1', __name__, url_prefix='/api/v1/')
@@ -14,7 +14,7 @@ def health():
 
 
 @app.route('/add', methods=['POST'])
-@jwt_middleware(users)
+@jwt_middleware(user_col)
 def add(user):
     data = request.get_json()
     try:
@@ -28,11 +28,11 @@ def add(user):
 
 
 @app.route('/update/<string:todo_id>', methods=['PUT'])
-@jwt_middleware(users)
+@jwt_middleware(user_col)
 def update(user, todo_id):
     data = request.get_json()
     try:
-        update_todo(str(user['_id']), todo_id, **data)
+        update_todo(todo_id, str(user['_id']), **data)
         return jsonify({'status': 'ok'}), 200
     except Error4XX as e:
         return jsonify({'error': str(e)}), e.xx
@@ -42,12 +42,11 @@ def update(user, todo_id):
 
 
 @app.route('/get', methods=['GET'])
-@jwt_middleware(users)
+@jwt_middleware(user_col)
 def get(user):
     args = request.args
     try:
         todos = get_todos(str(user['_id']), int(args.get('offset', 0)), int(args.get('limit', 10)))
-        for todo in todos: todo['_id'] = str(todo['_id'])
         return jsonify(todos), 200
     except Error4XX as e:
         return jsonify({'error': str(e)}), e.xx
@@ -57,7 +56,7 @@ def get(user):
 
 
 @app.route('/delete/<string:todo_id>', methods=['DELETE'])
-@jwt_middleware(users)
+@jwt_middleware(user_col)
 def delete(user, todo_id):
     try:
         remove_todo(todo_id, str(user['_id']))
